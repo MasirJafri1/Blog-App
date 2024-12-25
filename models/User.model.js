@@ -1,6 +1,7 @@
 const { error } = require("console");
 const { createHmac, randomBytes } = require("crypto");
 const { Schema, Model, model } = require("mongoose");
+const { createTokensForUsers } = require("../utilities/authentication");
 
 const userSchema = new Schema(
   {
@@ -50,7 +51,7 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-userSchema.static("matchPassword", async function (email, password) {
+userSchema.static("matchPasswordAndGenerateToken", async function (email, password) {
   const user = await this.findOne({ email });
   if (!user) throw new Error("User not Found!");
 
@@ -64,9 +65,11 @@ userSchema.static("matchPassword", async function (email, password) {
   if (hashedPassword !== userProvidedHash)
     throw new Error("Incorrect Password !");
 
-  return user;
+  const token = createTokensForUsers(user);
+  return token;
 });
 
-const User = model("User", userSchema);
 
+
+const User = model("User", userSchema);
 module.exports = User;
