@@ -5,6 +5,7 @@ const SECRET = "$MasirNodeLearning1965";
 function createTokensForUsers(user) {
   const payload = {
     _id: user._id,
+    name: user.fullName,
     email: user.email,
     profileImageURL: user.profileImageURL,
     role: user.role,
