@@ -3,31 +3,207 @@
 
 <head>
     <%- include('./partials/Head') %>
-        <title>SignUp</title>
+        <title>Sign Up | BlogOrbit</title>
 </head>
 
-<body>
+<body class="signup-page">
     <%- include('./partials/Nav') %>
-        <div class="container mt-4">
-            <form action="/user/signup" method="post">
-                <div class="mb-3">
-                    <label for="fullName" class="form-label">FullName</label>
-                    <input type="text" class="form-control" id="fullName" aria-describedby="emailHelp" name="fullName">
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email">
-                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password">
-                </div>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+        <div class="signup-container">
+            <div class="form-wrapper">
+                <h2 class="signup-title">Join BlogOrbit</h2>
+                <p class="signup-subtitle">Start your blogging journey today</p>
+
+                <form action="/user/signup" method="post" class="signup-form">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="fullName" name="fullName" required
+                                placeholder="Enter your full name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="email" name="email" required placeholder="Enter your email">
+                        </div>
+                        <small class="form-text">We'll never share your email with anyone else.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="password" name="password" required
+                                placeholder="Create a strong password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="signup-button">
+                        Create Account <i class="fas fa-user-plus"></i>
+                    </button>
+
+                    <p class="signin-link">
+                        Already have an account?
+                        <a href="/user/signin">Sign in</a>
+                    </p>
+                </form>
+            </div>
         </div>
-        <%- include('./partials/Scripts') %>
+
+        <%- include('./partials/Footer') %>
+            <%- include('./partials/Scripts') %>
+
+                <style>
+                    .signup-page {
+                        background: linear-gradient(to bottom right, #1a1f2c, #2c3e50);
+                        min-height: 100vh;
+                    }
+
+                    .signup-container {
+                        min-height: calc(100vh - 300px);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 2rem 1rem;
+                    }
+
+                    .form-wrapper {
+                        background: rgba(26, 31, 44, 0.95);
+                        padding: 2.5rem;
+                        border-radius: 12px;
+                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                        border: 1px solid rgba(255, 255, 255, 0.05);
+                        width: 100%;
+                        max-width: 420px;
+                        backdrop-filter: blur(10px);
+                    }
+
+                    .signup-title {
+                        color: #fff;
+                        font-size: 2rem;
+                        font-weight: 600;
+                        margin-bottom: 0.5rem;
+                        text-align: center;
+                    }
+
+                    .signup-subtitle {
+                        color: rgba(255, 255, 255, 0.6);
+                        text-align: center;
+                        margin-bottom: 2rem;
+                    }
+
+                    .form-group {
+                        margin-bottom: 1.5rem;
+                    }
+
+                    .form-group label {
+                        display: block;
+                        color: rgba(255, 255, 255, 0.85);
+                        margin-bottom: 0.5rem;
+                        font-size: 0.9rem;
+                    }
+
+                    .input-wrapper {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .input-icon {
+                        position: absolute;
+                        left: 1rem;
+                        color: rgba(100, 255, 218, 0.5);
+                        font-size: 1rem;
+                        pointer-events: none;
+                    }
+
+                    .signup-form input {
+                        width: 100%;
+                        padding: 0.8rem 1rem 0.8rem 2.8rem;
+                        background: rgba(255, 255, 255, 0.05);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 6px;
+                        color: #fff;
+                        font-size: 1rem;
+                        line-height: 1.5;
+                        transition: all 0.3s ease;
+                    }
+
+                    .signup-form input:focus {
+                        outline: none;
+                        border-color: #64ffda;
+                        box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.1);
+                        background: rgba(255, 255, 255, 0.08);
+                    }
+
+                    .signup-form input::placeholder {
+                        color: rgba(255, 255, 255, 0.3);
+                    }
+
+                    .form-text {
+                        display: block;
+                        color: rgba(255, 255, 255, 0.5);
+                        font-size: 0.8rem;
+                        margin-top: 0.5rem;
+                        padding-left: 0.5rem;
+                    }
+
+                    .signup-button {
+                        width: 100%;
+                        padding: 0.8rem;
+                        background: #64ffda;
+                        color: #1a1f2c;
+                        border: none;
+                        border-radius: 6px;
+                        font-size: 1rem;
+                        font-weight: 500;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.5rem;
+                    }
+
+                    .signup-button:hover {
+                        background: #73ffde;
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 12px rgba(100, 255, 218, 0.2);
+                    }
+
+                    .signin-link {
+                        text-align: center;
+                        margin-top: 1.5rem;
+                        color: rgba(255, 255, 255, 0.6);
+                        font-size: 0.9rem;
+                    }
+
+                    .signin-link a {
+                        color: #64ffda;
+                        text-decoration: none;
+                        font-weight: 500;
+                        transition: all 0.3s ease;
+                    }
+
+                    .signin-link a:hover {
+                        text-decoration: underline;
+                        color: #73ffde;
+                    }
+
+                    @media (max-width: 480px) {
+                        .form-wrapper {
+                            padding: 2rem 1.5rem;
+                        }
+
+                        .signup-title {
+                            font-size: 1.75rem;
+                        }
+                    }
+                </style>
 </body>
 
 </html>

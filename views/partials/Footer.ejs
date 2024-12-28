@@ -1,0 +1,150 @@
+<footer class="custom-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="footer-text">Blog</span><span class="footer-accent">Orbit</span>
+                <p class="footer-tagline">Share your stories with the world</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h5>Quick Links</h5>
+                    <a href="/">Home</a>
+                    <a href="/">Blogs</a>
+                    <a href="/user/signup">Join Us</a>
+                </div>
+                <div class="link-group">
+                    <h5>Connect</h5>
+                    <a href="https://in.linkedin.com/in/masirjafri" target="_blank"><i class="fab fa-linkedin"></i>
+                        LinkedIn</a>
+                    <a href="https://github.com/MasirJafri1" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="mailto:masirjafri1@gmail.com"><i class="fas fa-envelope"></i> masirjafri1@gmail.com</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <%= new Date().getFullYear() %> BlogOrbit. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        min-height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        margin: 0;
+    }
+
+    main {
+        width: 100%;
+        min-height: 100%;
+    }
+
+    /* Footer styles */
+    .custom-footer {
+        background: linear-gradient(to right, #1a1f2c, #2c3e50);
+        color: rgba(255, 255, 255, 0.85);
+        padding: 3rem 0 1.5rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        width: 100%;
+        position: relative;
+        bottom: 0;
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .footer-brand {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .footer-text {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .footer-accent {
+        color: #64ffda;
+        text-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+    }
+
+    .footer-tagline {
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .footer-links {
+        display: flex;
+        gap: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .link-group {
+        min-width: 120px;
+    }
+
+    .link-group h5 {
+        color: #64ffda;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .link-group a {
+        display: block;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .link-group a:hover {
+        color: #64ffda;
+        transform: translateX(3px);
+    }
+
+    .link-group i {
+        width: 20px;
+    }
+
+    .footer-bottom {
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    @media (max-width: 768px) {
+        .footer-content {
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .footer-links {
+            gap: 2rem;
+        }
+    }
+</style>
