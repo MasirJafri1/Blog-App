@@ -37,7 +37,7 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-// Logout route - 
+// Logout route -
 router.get("/logout", (req, res) => {
   res.clearCookie("token").redirect("/");
 });
@@ -61,14 +61,14 @@ router.post("/signup", async (req, res) => {
       });
     }
 
-    // Create new user 
+    // Create new user
     await User.create({
       fullName,
       email,
       password,
     });
 
-    return res.redirect("/signin");
+    return res.redirect("/user/signin");
   } catch (error) {
     // console.error("Signup error:", error);
     return res.render("signup", {
