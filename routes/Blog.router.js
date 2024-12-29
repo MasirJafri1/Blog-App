@@ -1,23 +1,45 @@
 const express = require("express");
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 const Blog = require("../models/Blog.model");
-const path = require("path");
 const Comments = require("../models/Comments.model");
+require("dotenv").config();
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.resolve(`./public/uploads/`));
-  },
-  filename: function (req, file, cb) {
-    const fileName = `${Date.now()} - ${file.originalname}`;
-    cb(null, fileName);
+// Cloudinary Configure
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Multer configuration
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "blog-uploads",
+    format: async (req, file) => "jpg",
+    public_id: (req, file) => `${Date.now()}-${file.originalname}`,
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB max size
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true); // Accept the file
+    } else {
+      cb(new Error("Invalid file type. Only images are allowed."), false); // Reject the file
+    }
+  },
+});
 
+// Routes
 router.get("/add-new", (req, res) => {
   return res.render("addBlog", {
     user: req.user,
@@ -25,38 +47,73 @@ router.get("/add-new", (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const blog = await Blog.findById(req.params.id).populate("createdBy");
-  //   console.log(blog);
-  const comments = await Comments.find({ blogId: req.params.id }).populate(
-    "createdBy"
-  );
-  // console.log(comments);
-
-  return res.render("blog", {
-    user: req.user,
-    blog,
-    comments,
-  });
+  try {
+    const blog = await Blog.findById(req.params.id).populate("createdBy");
+    if (!blog) {
+      return res.status(404).send("Blog not found.");
+    }
+    const comments = await Comments.find({ blogId: req.params.id }).populate(
+      "createdBy"
+    );
+    return res.render("blog", {
+      user: req.user,
+      blog,
+      comments,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.post("/comment/:blogId", async (req, res) => {
-  const comment = await Comments.create({
-    content: req.body.content,
-    blogId: req.params.blogId,
-    createdBy: req.user._id,
-  });
-  return res.redirect(`/blog/${req.params.blogId}`);
+  try {
+    await Comments.create({
+      content: req.body.content,
+      blogId: req.params.blogId,
+      createdBy: req.user._id,
+    });
+    return res.redirect(`/blog/${req.params.blogId}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.post("/", upload.single("coverImage"), async (req, res) => {
-  const { title, body } = req.body;
-  const blog = await Blog.create({
-    title,
-    body,
-    createdBy: req.user._id,
-    coverImageUrl: `uploads/${req.file.filename}`,
-  });
-  return res.redirect(`/blog/${blog._id}`);
+  try {
+    const { title, body } = req.body;
+
+    if (!req.file) {
+      return res.status(400).send("Cover image is required.");
+    }
+
+    if (!title || !body) {
+      return res.status(400).send("Title and body are required.");
+    }
+
+    const coverImageUrl = req.file.path;
+
+    const blog = await Blog.create({
+      title,
+      body,
+      createdBy: req.user._id,
+      coverImageUrl: req.file.path,
+    });
+    return res.redirect(`/blog/${blog._id}`);
+  } catch (err) {
+    if (err instanceof multer.MulterError) {
+      res.status(400).send("File upload error: " + err.message);
+    } else {
+      console.error(err);
+      res.status(500).send("Internal Server Error");
+    }
+  }
 });
 
-module.exports = router;  
+router.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).send("Something went wrong! Please try again later.");
+});
+
+module.exports = router;
