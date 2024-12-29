@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -11,10 +12,10 @@ const {
 } = require("./middlewares/authentication.middleware.js");
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 mongoose
-  .connect("mongodb://localhost:27017/BlogOrbit")
+  .connect(process.env.MONGO_URL)
   .then((e) => console.log("MongoDB connected"));
 
 app.set("view engine", "ejs");
