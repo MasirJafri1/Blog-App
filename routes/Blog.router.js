@@ -80,36 +80,46 @@ router.post("/comment/:blogId", async (req, res) => {
   }
 });
 
-router.post("/", upload.single("coverImage"), async (req, res) => {
-  try {
-    const { title, body } = req.body;
+// MiddleWare for validating the title and body.Only upload image if title and body there
 
-    if (!req.file) {
-      return res.status(400).send("Cover image is required.");
-    }
+function validateBlogInput(req, res, next) {
+  const { title, body } = req.body;
 
-    if (!title || !body) {
-      return res.status(400).send("Title and body are required.");
-    }
+  if (!title || !body) {
+    return res.status(400).send("Title and body are required.");
+  }
+  next();
+}
 
-    const coverImageUrl = req.file.path;
+router.post(
+  "/",
+  validateBlogInput,
+  upload.single("coverImage"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).send("Cover image is required.");
+      }
+      const { title, body } = req.body;
+      const coverImageUrl = req.file.path;
 
-    const blog = await Blog.create({
-      title,
-      body,
-      createdBy: req.user._id,
-      coverImageUrl: req.file.path,
-    });
-    return res.redirect(`/blog/${blog._id}`);
-  } catch (err) {
-    if (err instanceof multer.MulterError) {
-      res.status(400).send("File upload error: " + err.message);
-    } else {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
+      const blog = await Blog.create({
+        title,
+        body,
+        createdBy: req.user._id,
+        coverImageUrl,
+      });
+      return res.redirect(`/blog/${blog._id}`);
+    } catch (err) {
+      if (err instanceof multer.MulterError) {
+        res.status(400).send("File upload error: " + err.message);
+      } else {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      }
     }
   }
-});
+);
 
 router.use((err, req, res, next) => {
   console.error(err);
