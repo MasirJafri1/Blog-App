@@ -70,7 +70,7 @@ const RecentArticles: React.FC<RecentArticlesProps> = ({ articles }) => {
                   <TableCell>{article.createdAt.toDateString()}</TableCell>
                   <TableCell>
                     <div className="flex gap-2  ">
-                      <Link href={`/dashboard/articles/${12}/edit`}>
+                      <Link href={`/dashboard/articles/${article.id}/edit`}>
                         <Button variant={"ghost"} size={"sm"}>
                           Edit
                         </Button>
