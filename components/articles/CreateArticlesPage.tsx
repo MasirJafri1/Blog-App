@@ -1,120 +1,147 @@
 "use client";
-
-import React, { startTransition, useActionState, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import dynamic from "next/dynamic";
-import { Button } from "../ui/button";
+import { FormEvent, startTransition, useActionState, useState } from "react";
 import "react-quill-new/dist/quill.snow.css";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { createArticles } from "@/actions/createArticles";
+import dynamic from "next/dynamic";
+import Navbar from "../home/header/Navbar";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
-
-const CreateArticlesPage = () => {
+export function CreateArticlePage() {
   const [content, setContent] = useState("");
+
   const [formState, action, isPending] = useActionState(createArticles, {
-    error: {},
+    errors: {},
   });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
     formData.append("content", content);
 
-    startTransition(() => action(formData));
+    // Wrap the action call in startTransition
+    startTransition(() => {
+      action(formData);
+    });
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Create New Article</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Input
-                type="text"
-                name="title"
-                placeholder="Enter the title of Article"
-              />
-              {formState.error.title && (
-                <span className="text-red-600 text-sm">
-                  {formState.error.title}
-                </span>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Category</Label>
-              <select name="category" className="flex h-10 w-full rounded-md">
-                <option>Select Category</option>
-                <option value="technology">Technology</option>
-                <option value="programming">Programming</option>
-                <option value="web-development">Web Development</option>
-              </select>
-              {formState.error.category && (
-                <span className="text-red-600 text-sm">
-                  {formState.error.category}
-                </span>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="featuredImage">Featured Image</Label>
-              <Input
-                type="file"
-                id="featuredImage"
-                name="featuredImage"
-                accept="image/*"
-              ></Input>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Content</Label>
-              <ReactQuill theme="snow" value={content} onChange={setContent} />
-              {formState.error.content && (
-                <span className="text-red-600 text-sm">
-                  {formState.error.content[0]}
-                </span>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-4">
-              <Button variant={"outline"}>Cancel</Button>
-              <Button disabled={isPending} type="submit">
-                {isPending ? (
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                ) : (
-                  "Publish Article"
+    <>
+      <Navbar />
+      <div className="max-w-4xl mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Create New Article</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Article Title</Label>
+                <Input
+                  id="title"
+                  name="title"
+                  placeholder="Enter article title"
+                />
+                {formState.errors.title && (
+                  <span className="font-medium text-sm text-red-500">
+                    {formState.errors.title}
+                  </span>
                 )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
+              </div>
 
-export default CreateArticlesPage;
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <select
+                  id="category"
+                  name="category"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">Select Category</option>
+                  <option value="technology">Technology</option>
+                  <option value="programming">Programming</option>
+                  <option value="web-development">Web Development</option>
+                </select>
+                {formState.errors.category && (
+                  <span className="font-medium text-sm text-red-500">
+                    {formState.errors.category}
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="featuredImage">Featured Image</Label>
+                <Input
+                  id="featuredImage"
+                  name="featuredImage"
+                  type="file"
+                  accept="image/*"
+                />
+                {formState.errors.featuredImage && (
+                  <span className="font-medium text-sm text-red-500">
+                    {formState.errors.featuredImage}
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Content</Label>
+                <ReactQuill
+                  theme="snow"
+                  value={content}
+                  onChange={setContent}
+                />
+                {formState.errors.content && (
+                  <span className="font-medium text-sm text-red-500">
+                    {formState.errors.content[0]}
+                  </span>
+                )}
+              </div>
+              {formState.errors.formErrors && (
+                <div className="dark:bg-transparent bg-red-100 p-2 border border-red-600">
+                  <span className="font-medium text-sm text-red-500">
+                    {formState.errors.formErrors}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-end gap-4">
+                <Button type="button" variant="outline">
+                  Cancel
+                </Button>
+                <Button disabled={isPending} type="submit">
+                  {isPending ? (
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    "Publish Article"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  );
+}

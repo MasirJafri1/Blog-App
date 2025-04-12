@@ -2,11 +2,31 @@ import React from "react";
 import LeftSideBar from "@/components/dashboard/LeftSidebar";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { FileText, MessageCircle, PlusCircle } from "lucide-react";
+import { Clock, FileText, MessageCircle, PlusCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import RecentArticles from "./RecentArticles";
+import { prisma } from "@/lib/prisma";
 
-const BlogDashboard = () => {
+const BlogDashboard = async () => {
+  const [articles, totalComments] = await Promise.all([
+    prisma.articles.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        comments: true,
+        author: {
+          select: {
+            name: true,
+            email: true,
+            imageUrl: true,
+          },
+        },
+      },
+    }),
+    prisma.comment.count(),
+  ]);
+
   return (
     <main className="flex-1 p-4 md:p-8">
       <div className="flex justify-between items-center mb-8">
@@ -33,7 +53,7 @@ const BlogDashboard = () => {
             <FileText className="w-4 h-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold ">2</div>
+            <div className="text-2xl font-bold ">{articles.length}</div>
             <p className="text-sm text-muted-foreground mt-1">
               +5 from last month{" "}
             </p>
@@ -48,7 +68,7 @@ const BlogDashboard = () => {
             <MessageCircle className="w-4 h-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold ">3</div>
+            <div className="text-2xl font-bold ">{totalComments}</div>
             <p className="text-sm text-muted-foreground mt-1">
               12 awaiting moderation{" "}
             </p>
@@ -60,7 +80,7 @@ const BlogDashboard = () => {
             <CardTitle className="font-medium text-sm">
               Avg. Rating Time
             </CardTitle>
-            <MessageCircle className="w-4 h-4" />
+            <Clock className="w-4 h-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold ">3</div>
@@ -71,7 +91,7 @@ const BlogDashboard = () => {
         </Card>
       </div>
 
-      <RecentArticles />
+      <RecentArticles articles={articles} />
     </main>
   );
 };

@@ -11,8 +11,24 @@ import {
 } from "../ui/table";
 import { Badge } from "../ui/badge";
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
 
-const RecentArticles = () => {
+type RecentArticlesProps = {
+  articles: Prisma.ArticlesGetPayload<{
+    include: {
+      comments: true;
+      author: {
+        select: {
+          name: true;
+          email: true;
+          imageUrl: true;
+        };
+      };
+    };
+  }>[];
+};
+
+const RecentArticles: React.FC<RecentArticlesProps> = ({ articles }) => {
   return (
     <Card className="mb-8">
       <CardHeader>
@@ -23,44 +39,51 @@ const RecentArticles = () => {
           </Button>
         </div>
       </CardHeader>
+      {!articles.length ? (
+        <CardContent>No Articles Found</CardContent>
+      ) : (
+        <CardContent className="">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Comments</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-      <CardContent className="">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Comments</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>
-                <Badge
-                  className="rounded-full bg-green-100 text-green-800"
-                  variant={"secondary"}
-                >
-                  Published
-                </Badge>
-              </TableCell>
-              <TableCell>2</TableCell>
-              <TableCell>12 Feb</TableCell>
-              <TableCell>
-                <div className="flex gap-2  ">
-                  <Link href={`/dashboard/articles/${12}/edit`}>
-                    <Button variant={"ghost"} size={"sm"}>Edit</Button>
-                  </Link>
-                  <DeleteButton />
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </CardContent>
+            <TableBody>
+              {articles.map((article) => (
+                <TableRow key={article.id}>
+                  <TableCell>{article.title}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className="rounded-full bg-green-100 text-green-800"
+                      variant={"secondary"}
+                    >
+                      Published
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{article.comments.length}</TableCell>
+                  <TableCell>{article.createdAt.toDateString()}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2  ">
+                      <Link href={`/dashboard/articles/${12}/edit`}>
+                        <Button variant={"ghost"} size={"sm"}>
+                          Edit
+                        </Button>
+                      </Link>
+                      <DeleteButton />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      )}
     </Card>
   );
 };
