@@ -6,6 +6,7 @@ import { MessageCircle } from "lucide-react";
 import LikeButton from "./LikeButton";
 import CommentList from "../comments/CommentList";
 import CommentForm from "../comments/CommentForm";
+import { prisma } from "@/lib/prisma";
 
 type ArticleDetailPageProps = {
   article: Prisma.ArticlesGetPayload<{
@@ -20,7 +21,24 @@ type ArticleDetailPageProps = {
     };
   }>;
 };
-const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ article }) => {
+const ArticleDetailPage: React.FC<ArticleDetailPageProps> = async ({
+  article,
+}) => {
+  const comments = await prisma.comment.findMany({
+    where: {
+      articleId: article.id,
+    },
+    include: {
+      author: {
+        select: {
+          name: true,
+          email: true,
+          imageUrl: true,
+        },
+      },
+    },
+  });
+
   return (
     <div className="min-h-screen bg-background">
       {/* Reuse your existing Navbar */}
@@ -74,10 +92,10 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ article }) => {
             </div>
 
             {/* Comment Form */}
-            <CommentForm  />
+            <CommentForm articleId={article.id} />
 
             {/* Comments List */}
-            <CommentList />
+            <CommentList comments={comments} />
           </Card>
         </article>
       </main>
