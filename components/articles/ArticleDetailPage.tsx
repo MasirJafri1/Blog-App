@@ -7,6 +7,7 @@ import LikeButton from "./LikeButton";
 import CommentList from "../comments/CommentList";
 import CommentForm from "../comments/CommentForm";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 
 type ArticleDetailPageProps = {
   article: Prisma.ArticlesGetPayload<{
@@ -38,6 +39,22 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = async ({
       },
     },
   });
+
+  const likes = await prisma.like.findMany({
+    where: {
+      articleId: article.id,
+    },
+  });
+
+  const { userId } = await auth();
+
+  const user = await prisma.user.findUnique({
+    where: {
+      clerkUserId: userId as string,
+    },
+  });
+
+  const isLiked: boolean = likes.some((like) => like.userId === user?.id);
 
   return (
     <div className="min-h-screen bg-background">
@@ -80,7 +97,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = async ({
           />
 
           {/* Article Actions */}
-          <LikeButton />
+          <LikeButton articleId={article.id} likes={likes} isLiked={isLiked} />
 
           {/* Comments Section */}
           <Card className="p-6">
